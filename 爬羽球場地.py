@@ -72,7 +72,7 @@ def fetch_badminton():
         url = f'https://scr.cyc.org.tw/tp{v}.aspx?module=ind&files=ind'
         driver.get(url)
         
-        change_id_cookie(driver)
+        change_id_cookie(driver , id_session)
         time.sleep(0.5)
         D = 1 #先給定1要有個初始網站爬所有可訂日期
         url_book = f'https://scr.cyc.org.tw/tp{v}.aspx?module=net_booking&files=booking_place&StepFlag=2&PT=1&D={date}&D2={D}'
@@ -99,7 +99,7 @@ def fetch_badminton():
                         i+=1
 
     driver.close()
-    print(f'Spend : {time.time()-t:.2f}')
+    print(f'完成花費時間 : {time.time()-t:.2f} s')
     
     date = date.replace('/','')
     df.to_csv(f'./歷史資料/{date}_羽球.csv', index=False) #存歷史資料用

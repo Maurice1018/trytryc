@@ -6,7 +6,12 @@ let ascending = true;
 async function loadSportsData() {
     try {
         const response = await fetch('/data/'); // 從 API 獲取 JSON 資料
-        const data = await response.json();
+        const result  = await response.json();
+        const data = result.items; // 資料列表
+        const lastUpdated = result.update_time; // 最後更新時間
+
+        // 更新最後更新時間到頁面
+        document.getElementById('last-updated').textContent = `最後資料更新時間：${lastUpdated}`;
 
 	// 排序資料
         data.sort((a, b) => {
