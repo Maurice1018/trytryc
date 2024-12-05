@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 import json
 import os
+import random
 
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -37,13 +38,15 @@ app = FastAPI()
 #設定背景程式執行refresh session ID 永遠的活著
 async def long_running_task():
     while True:
-        refresh_time = 1450
+        refresh_time = 1060 + random.randint(1,20)
         print('Starting refresh session ID...')
         try:
-            refresh_sessionID()
-            print('Sucessfully refresh session ID')
+            if refresh_sessionID():
+                print(f"Session refreshed successfully after {refresh_time}s")
+            else:
+                print(f"Failed to refresh session after {refresh_time}s")
         except Exception as e:
-            print(f"Failed to refresh session: {str(e)}")
+            print(f"Failed to refresh session after {refresh_time}s: {str(e)}")
 
         await asyncio.sleep(refresh_time)
 
@@ -69,8 +72,10 @@ async def get_items():
 @app.get("/api/refresh-session")
 async def refresh_session():
     try:
-        refresh_sessionID()
-        return {"message": "Session refreshed successfully"}
+        if refresh_sessionID():
+            return {"message": "Session refreshed successfully"}
+        else:
+            return {"message": "Failed to refresh session"}
     except Exception as e:
         return {"message": f"Failed to refresh session: {str(e)}"}
 

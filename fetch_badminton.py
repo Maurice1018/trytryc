@@ -46,19 +46,25 @@ def refresh_sessionID():
     driver = webdriver.Chrome(options = options, service=Service())
     url = f'https://scr.cyc.org.tw/tp12.aspx?module=ind&files=ind'
     driver.get(url)
-    
+
     change_id_cookie(driver, id_session)
     time.sleep(0.5)
-    driver.refresh()
+
+    date = datetime.datetime.today() + datetime.timedelta(days = 1)
+    date = date.strftime('%Y/%m/%d')
+    url_book = f'https://scr.cyc.org.tw/tp12.aspx?module=net_booking&files=booking_place&StepFlag=2&PT=1&D={date}&D2=1'
+    driver.get(url_book)
+    # driver.refresh()
     try:
-        if (driver.find_element(By.ID , value = 'lab_Name').text):
-            print(driver.find_element(By.ID , value = 'lab_Name').text)
-        else:
-            print('SessionID expired.')
-    except:
+        driver.find_element(by=By.ID , value = 'ContentPlaceHolder1_Step2_SportType_lab').text
+        print(driver.find_element(By.ID , value = 'lab_Name').text)
         driver.close()
-        return
-    driver.close()
+        return True
+    except:
+        print('SessionID expired.')
+        driver.close()
+        return False
+    
     
 
 def fetch_badminton():
