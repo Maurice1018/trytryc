@@ -21,7 +21,7 @@ class Item(BaseModel):
     時間: str
 
 app = FastAPI()
-@app.get("/items/", response_model=List[Item])
+@app.get("/items", response_model=List[Item])
 async def get_items():
     with open('badminton.json' , 'r' , encoding = 'utf-8') as f:
         items = json.load(f)

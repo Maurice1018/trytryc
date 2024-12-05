@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 
-# In[2]:
+# In[ ]:
 
 
 #得到登入session，把原本的刪除串改後放回去
@@ -32,6 +32,35 @@ def change_id_cookie(driver , id_session):
     cookie['value'] = id_session
     driver.delete_cookie('ASP.NET_SessionId')
     driver.add_cookie(cookie)
+
+def refresh_sessionID():
+    with open('id_session.txt') as f:
+        id_session = f.readline()
+        f.close()
+    
+    options = ChromeOptions() 
+    options.add_argument('--headless')
+    user_agent = "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    options.add_argument(user_agent)
+    
+    driver = webdriver.Chrome(options = options, service=Service())
+    url = f'https://scr.cyc.org.tw/tp12.aspx?module=ind&files=ind'
+    driver.get(url)
+    
+    change_id_cookie(driver, id_session)
+    time.sleep(0.5)
+    driver.refresh()
+    try:
+        if (driver.find_element(By.ID , value = 'lab_Name').text):
+            print(driver.find_element(By.ID , value = 'lab_Name').text)
+        else:
+            print('SessionID expired.')
+    except:
+        driver.close()
+        return
+    driver.close()
+    return driver.find_element(By.ID , value = 'lab_Name').text
+    
 
 def fetch_badminton():
     t = time.time()
@@ -72,7 +101,7 @@ def fetch_badminton():
         url = f'https://scr.cyc.org.tw/tp{v}.aspx?module=ind&files=ind'
         driver.get(url)
         
-        change_id_cookie(driver , id_session)
+        change_id_cookie(driver, id_session)
         time.sleep(0.5)
         D = 1 #先給定1要有個初始網站爬所有可訂日期
         url_book = f'https://scr.cyc.org.tw/tp{v}.aspx?module=net_booking&files=booking_place&StepFlag=2&PT=1&D={date}&D2={D}'
@@ -99,19 +128,11 @@ def fetch_badminton():
                         i+=1
 
     driver.close()
-    print(f'完成花費時間 : {time.time()-t:.2f} s')
+    print(f'Finished! Spend time : {time.time()-t:.2f} s')
     
     date = date.replace('/','')
     df.to_csv(f'./歷史資料/{date}_羽球.csv', index=False) #存歷史資料用
     df.to_excel(f'./歷史資料/{date}_羽球.xlsx', index=False) #存歷史資料用
     df.to_json('badminton.json' , orient='records' , force_ascii=False) #API用
     
-if __name__ == '__main__':
-    fetch_badminton()
-
-
-# In[ ]:
-
-
-
 
