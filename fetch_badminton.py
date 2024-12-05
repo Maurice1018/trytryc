@@ -59,7 +59,6 @@ def refresh_sessionID():
         driver.close()
         return
     driver.close()
-    return driver.find_element(By.ID , value = 'lab_Name').text
     
 
 def fetch_badminton():
